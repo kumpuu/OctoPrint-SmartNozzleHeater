@@ -1,0 +1,4 @@
+include README.md
+recursive-include octoprint_smart-nozzle-heater/templates *
+recursive-include octoprint_smart-nozzle-heater/translations *
+recursive-include octoprint_smart-nozzle-heater/static *
