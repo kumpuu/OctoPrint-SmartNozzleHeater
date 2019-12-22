@@ -11,9 +11,10 @@ from __future__ import absolute_import
 
 import octoprint.plugin
 
-class Smart-nozzle-heaterPlugin(octoprint.plugin.SettingsPlugin,
-                                octoprint.plugin.AssetPlugin,
-                                octoprint.plugin.TemplatePlugin):
+class SmartNozzleHeaterPlugin(octoprint.plugin.SettingsPlugin,
+                                octoprint.plugin.WizardPlugin,
+                                octoprint.plugin.TemplatePlugin
+                                octoprint.plugin.AssetPlugin):
 
 	##~~ SettingsPlugin mixin
 
@@ -28,9 +29,9 @@ class Smart-nozzle-heaterPlugin(octoprint.plugin.SettingsPlugin,
 		# Define your plugin's asset files to automatically include in the
 		# core UI here.
 		return dict(
-			js=["js/smart-nozzle-heater.js"],
-			css=["css/smart-nozzle-heater.css"],
-			less=["less/smart-nozzle-heater.less"]
+			js=["js/SmartNozzleHeater.js"],
+			#css=["css/smart-nozzle-heater.css"],
+			#less=["less/smart-nozzle-heater.less"]
 		)
 
 	##~~ Softwareupdate hook
@@ -40,21 +41,29 @@ class Smart-nozzle-heaterPlugin(octoprint.plugin.SettingsPlugin,
 		# Plugin here. See https://github.com/foosel/OctoPrint/wiki/Plugin:-Software-Update
 		# for details.
 		return dict(
-			smart-nozzle-heater=dict(
-				displayName="Smart-nozzle-heater Plugin",
+			SmartNozzleHeater=dict(
+				displayName="Smart Nozzle Heater Plugin",
 				displayVersion=self._plugin_version,
 
 				# version check: github repository
 				type="github_release",
 				user="kumpuu",
-				repo="Smart Nozzle Heater",
+				repo="OctoPrint-SmartNozzleHeater",
 				current=self._plugin_version,
 
 				# update method: pip
-				pip="https://github.com/kumpuu/Smart Nozzle Heater/archive/{target_version}.zip"
+				pip="https://github.com/kumpuu/OctoPrint-SmartNozzleHeater/archive/{target_version}.zip"
 			)
 		)
 
+	def is_wizard_required(self):
+		return True
+
+	def get_wizard_version(self):
+		return 1
+
+	def On_GCode(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
+		return None
 
 # If you want your plugin to be registered within OctoPrint under a different name than what you defined in setup.py
 # ("OctoPrint-PluginSkeleton"), you may define that here. Same goes for the other metadata derived from setup.py that
@@ -70,10 +79,11 @@ __plugin_name__ = "Smart-nozzle-heater Plugin"
 
 def __plugin_load__():
 	global __plugin_implementation__
-	__plugin_implementation__ = Smart-nozzle-heaterPlugin()
+	__plugin_implementation__ = SmartNozzleHeaterPlugin()
 
 	global __plugin_hooks__
 	__plugin_hooks__ = {
+		"octoprint.comm.protocol.gcode.sent": __plugin_implementation__.On_GCode,
 		"octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information
 	}
 
